@@ -29,3 +29,17 @@ While running/building web with `webrender`, the output will be standardized nat
 - transpile JS code with Rollup (not convert ES6 to ES5, but make use of ES6 Module)
 - merge JS files together and minify them
 
+
+# Test
+
+```bash
+git clone git@github.com:ndaidong/webrender.git
+cd webrender
+npm i
+npm test
+```
+
+
+# License
+
+The MIT License (MIT)
