@@ -3,32 +3,37 @@ Run live web and build static site
 
 # Usage
 
-Install it as local package:
-
 ```bash
 npm i webrender
 ```
 
-Then run website in `src` folder
+Then run website stored at given folder:
 
 ```bash
-./node_modules/.bin/webren run
+./node_modules/.bin/webren run PATH_TO_SOURCE_DIR
 ```
 
-Or release a static site into `dist` folder
+Or build static site:
 
 ```bash
-./node_modules/.bin/webren build
+./node_modules/.bin/webren build SOURCE_DIR TARGET_DIR
 ```
 
-While running/building web with `webrender`, the output will be standardized naturally:
+It's recommended to add to script section in the `package.json` file, for example:
 
-- cleanify and minify HTML
-- transpile CSS with PostCSS to make use of CSS4 features
-- merge CSS files and minify them
-- transpile JS code with Rollup (not convert ES6 to ES5, but make use of ES6 Module)
-- merge JS files together and minify them
+```json
+  "scripts": {
+    "dev": "DEBUG=webrender:* webren run ./src",
+    "build": "DEBUG=webrender:* webren build ./src ./dist"
+  },
+```
 
+Then, we can use it as:
+
+```bash
+npm run dev  # or
+npm run build
+```
 
 # Test
 
