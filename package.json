@@ -1,0 +1,55 @@
+{
+  "version": "2.0.0",
+  "name": "webrender",
+  "homepage": "https://www.npmjs.com/package/webrender",
+  "description": "Run live web and build static site using pure HTML/JS/CSS, with PostCSS, Rollup",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ndaidong/webrender"
+  },
+  "author": "@ndaidong",
+  "engines": {
+    "node": ">= 10.14.2"
+  },
+  "bin": {
+    "webren": "./index.js"
+  },
+  "main": "./index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "jest --verbose --coverage=true --detectOpenHandles",
+    "posttest": "rm -rf ./test-data/output"
+  },
+  "dependencies": {
+    "@rollup/plugin-commonjs": "^11.1.0",
+    "@rollup/plugin-node-resolve": "^7.1.3",
+    "@rollup/plugin-strip": "^1.3.2",
+    "autoprefixer": "^9.7.6",
+    "bellajs": "^8.0.2",
+    "cheerio": "^1.0.0-rc.3",
+    "clean-css": "^4.2.3",
+    "debug": "^4.1.1",
+    "express": "^4.17.1",
+    "html-minifier": "^4.0.0",
+    "minimist": "^1.2.5",
+    "postcss": "^7.0.29",
+    "postcss-custom-media": "^7.0.8",
+    "postcss-custom-properties": "^9.1.1",
+    "postcss-import": "^12.0.1",
+    "postcss-nested": "^4.2.1",
+    "postcss-short": "^5.0.0",
+    "pretty": "^2.0.0",
+    "rollup": "^2.8.2",
+    "rollup-plugin-cleanup": "^3.1.1",
+    "strip-css-comments": "^4.1.0",
+    "terser": "^4.6.13"
+  },
+  "devDependencies": {
+    "coveralls": "^3.1.0",
+    "eslint-config-goes": "^1.1.8",
+    "jest": "^26.0.1",
+    "supertest": "^4.0.2"
+  },
+  "license": "MIT"
+}

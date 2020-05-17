@@ -1,0 +1,15 @@
+coverage/*
+node_modules/*
+.nyc_output/*
+dist
+storage
+build
+static
+LICENSE
+package.json
+README.md
+
+vendor
+
+.nuxt
+test-data
