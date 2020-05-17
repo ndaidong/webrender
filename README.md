@@ -1,6 +1,10 @@
 # webrender
 Run live web and build static site
 
+[![NPM](https://badge.fury.io/js/webrender.svg)](https://badge.fury.io/js/webrender)
+[![Build Status](https://travis-ci.org/ndaidong/webrender.svg?branch=master)](https://travis-ci.org/ndaidong/webrender)
+[![Coverage Status](https://coveralls.io/repos/github/ndaidong/webrender/badge.svg?branch=master&updated=1)](https://coveralls.io/github/ndaidong/webrender?branch=master)
+
 # Usage
 
 ```bash
