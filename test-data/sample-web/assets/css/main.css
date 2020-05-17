@@ -1,0 +1,25 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  font-family: arial;
+}
+.container {
+  margin: 20px auto;
+  max-width: 500px;
+}
+
+fieldset {
+  margin: 10px auto 20px;
+  padding: 20px;
+  border: dashed 1px #666;
+
+  &.output {
+    border: none;
+    padding: 20px 0px;
+  }
+
+  & legend {
+    padding: 0px 10px;
+    font-style: italic;
+  }
+}

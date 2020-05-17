@@ -16,7 +16,10 @@
   },
   "main": "./index.js",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "jest --verbose --coverage=true --detectOpenHandles",
+    "posttest": "rm -rf ./test-data/output"
   },
   "dependencies": {
     "@rollup/plugin-commonjs": "^11.1.0",
@@ -43,7 +46,9 @@
     "terser": "^4.6.13"
   },
   "devDependencies": {
-    "eslint-config-goes": "^1.1.8"
+    "eslint-config-goes": "^1.1.8",
+    "jest": "^26.0.1",
+    "supertest": "^4.0.2"
   },
   "license": "MIT"
 }

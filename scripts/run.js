@@ -13,16 +13,16 @@ const {createFilePath} = require('./utils');
 
 const {info} = require('./logger');
 
-const app = express();
-
-const env = process.env || {};
-
-const PORT = env['PORT'] || 8182;
-
-const REVISION = genid(24);
+const DEFAULT_PORT = 8182;
 
 
 const run = (src) => {
+  const env = process.env || {};
+  const port = env['PORT'] || DEFAULT_PORT;
+  const revision = genid(24);
+
+  const app = express();
+
   app.get('*', async (req, res, next) => {
     const endpoint = req.path;
     const fpath = createFilePath(src, endpoint);
@@ -30,7 +30,7 @@ const run = (src) => {
       return next();
     }
     if (endpoint.endsWith('.html')) {
-      const content = parseHTML(fpath, REVISION);
+      const content = parseHTML(fpath, revision);
       res.type('text/html');
       return res.send(content);
     }
@@ -53,7 +53,7 @@ const run = (src) => {
       fpath = createFilePath(src, 'index.html');
     }
     if (existsSync(fpath)) {
-      const content = parseHTML(fpath, REVISION);
+      const content = parseHTML(fpath, revision);
       res.type('text/html');
       return res.send(content);
     }
@@ -67,8 +67,8 @@ const run = (src) => {
     return res.status(404).send(content);
   });
 
-  app.listen(PORT, () => {
-    info(`Server started at http://0.0.0.0:${PORT}`);
+  return app.listen(port, () => {
+    info(`Server started at http://0.0.0.0:${port}`);
   });
 };
 

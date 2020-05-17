@@ -61,12 +61,12 @@ const buildHtmlPage = (tplFile, sourceDir, targetDir) => {
 
   cssFiles.forEach(async (cssFile) => {
     const srcFilePath = getAssetPath(cssFile, sourceDir);
-    const cssContent = await parseCSS(srcFilePath);
+    const cssContent = await parseCSS(srcFilePath, 'production');
     const baseDir = getBaseDir(cssFile);
-    const destDir = getAssetPath(baseDir, sourceDir);
-    existsSync(`mkdir -p ${destDir}`);
+    const destDir = getAssetPath(baseDir, targetDir);
+    execSync(`mkdir -p ${destDir}`);
     const fileName = getFileName(cssFile);
-    const distFilePath = getAssetPath(fileName, targetDir);
+    const distFilePath = getAssetPath(fileName, destDir);
     writeFile(distFilePath, cssContent);
   });
 
@@ -89,12 +89,12 @@ const buildHtmlPage = (tplFile, sourceDir, targetDir) => {
 
   jsFiles.forEach(async (jsFile) => {
     const srcFilePath = getAssetPath(jsFile, sourceDir);
-    const jsContent = await parseJS(srcFilePath);
+    const jsContent = await parseJS(srcFilePath, 'production');
     const baseDir = getBaseDir(jsFile);
-    const destDir = getAssetPath(baseDir, sourceDir);
-    existsSync(`mkdir -p ${destDir}`);
+    const destDir = getAssetPath(baseDir, targetDir);
+    execSync(`mkdir -p ${destDir}`);
     const fileName = getFileName(jsFile);
-    const distFilePath = getAssetPath(fileName, targetDir);
+    const distFilePath = getAssetPath(fileName, destDir);
     writeFile(distFilePath, jsContent);
   });
 
@@ -125,11 +125,11 @@ const build = (src, dist = './dist') => {
   execSync(`mkdir -p ${targetDir}`);
   const faviconFile = createFilePath(src, 'favicon.ico');
   if (existsSync(faviconFile)) {
-    existsSync(`cp ${faviconFile} ${targetDir}`);
+    execSync(`cp ${faviconFile} ${targetDir}`);
   }
   const sourceStaticDir = createFilePath(src, 'static');
   if (existsSync(sourceStaticDir)) {
-    existsSync(`cp -r ${sourceStaticDir} ${targetDir}`);
+    execSync(`cp -r ${sourceStaticDir} ${targetDir}`);
   }
 
   readdirSync(src).forEach((file) => {
