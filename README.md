@@ -7,23 +7,38 @@ Run live web and build static site
 
 # Usage
 
+Suppose that we want to build a front-end only website with pure HTML/CSS/JS or React, Vue, whatever. Our repo may look like following folder structure:
+
+```
+my-project
+ - package.json
+ - src/
+     - assets
+          - css
+              - main.css
+              - theme.css
+          - js
+              - main.js
+              - another-modules.js
+     - static
+        - fonts
+        - images
+     - favicon.ico
+     - index.html
+     - about.html
+     - faq.html
+
+```
+
+Here the website source code is placed within `src` folder. However the folder name can be anything else.
+
+In order to use `webrender`, let's install it:
+
 ```bash
 npm i webrender
 ```
 
-Then run website stored at given folder:
-
-```bash
-./node_modules/.bin/webren run PATH_TO_SOURCE_DIR
-```
-
-Or build static site:
-
-```bash
-./node_modules/.bin/webren build SOURCE_DIR TARGET_DIR
-```
-
-It's recommended to add to script section in the `package.json` file, for example:
+Then add these 2 commands to `script` section of the `package.json` file, for example:
 
 ```json
   "scripts": {
@@ -32,10 +47,15 @@ It's recommended to add to script section in the `package.json` file, for exampl
   },
 ```
 
-Then, we can use it as:
+Since now, we can run the website within `src` folder to view and develop it as below:
 
 ```bash
-npm run dev  # or
+npm run dev
+```
+
+Once everything is ok, we can build a static site into `dist` folder:
+
+```bash
 npm run build
 ```
 
