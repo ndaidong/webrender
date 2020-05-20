@@ -116,20 +116,41 @@ const build = (src, dist = './dist') => {
   }
   if (!existsSync(dist)) {
     execSync(`mkdir -p ${dist}`);
+    info(`Create "${dist}" folder `);
   }
   const webfolder = getFileName(src);
   const targetDir = createFilePath(dist, webfolder);
   if (existsSync(targetDir)) {
     execSync(`rm -rf ${targetDir}`);
+    info(`Remove old "${targetDir}" folder `);
   }
   execSync(`mkdir -p ${targetDir}`);
+  info(`Create "${targetDir}" folder `);
+
   const faviconFile = createFilePath(src, 'favicon.ico');
   if (existsSync(faviconFile)) {
     execSync(`cp ${faviconFile} ${targetDir}`);
+    info(`Release "${faviconFile}"`);
+  }
+  const faviconStaticFile = createFilePath(src, 'static', 'favicon.ico');
+  if (existsSync(faviconStaticFile)) {
+    execSync(`cp ${faviconStaticFile} ${targetDir}`);
+    info(`Release "${faviconStaticFile}"`);
+  }
+  const robotsFile = createFilePath(src, 'robots.txt');
+  if (existsSync(robotsFile)) {
+    execSync(`cp ${robotsFile} ${targetDir}`);
+    info(`Release "${robotsFile}"`);
+  }
+  const robotsStaticFile = createFilePath(src, 'static', 'robots.txt');
+  if (existsSync(robotsStaticFile)) {
+    execSync(`cp ${robotsStaticFile} ${targetDir}`);
+    info(`Release "${robotsStaticFile}"`);
   }
   const sourceStaticDir = createFilePath(src, 'static');
   if (existsSync(sourceStaticDir)) {
     execSync(`cp -r ${sourceStaticDir} ${targetDir}`);
+    info(`Release "${sourceStaticDir}"`);
   }
 
   readdirSync(src).forEach((file) => {

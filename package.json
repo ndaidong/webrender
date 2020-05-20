@@ -19,7 +19,7 @@
     "lint": "eslint .",
     "pretest": "npm run lint",
     "test": "jest --verbose --coverage=true --detectOpenHandles",
-    "posttest": "rm -rf ./test-data/output"
+    "posttest": "rm -rf ./output"
   },
   "dependencies": {
     "@rollup/plugin-commonjs": "^11.1.0",

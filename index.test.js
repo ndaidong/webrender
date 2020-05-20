@@ -15,10 +15,23 @@ const {
 
 
 describe('Test run function', () => {
-  const app = run('./test-data/sample-web');
+  const app = run('./examples/simple-web');
   it('website must be running', async (done) => {
     const res = await request(app).get('/');
     expect(res.statusCode).toEqual(200);
+    done();
+  });
+
+  it('load favicon.icon must return icon content', async (done) => {
+    const res = await request(app).get('/favicon.ico');
+    expect(res.statusCode).toEqual(200);
+    expect(res.headers['content-type']).toMatch('image/x-icon');
+    done();
+  });
+  it('load robots.txt must return robot content', async (done) => {
+    const res = await request(app).get('/robots.txt');
+    expect(res.statusCode).toEqual(200);
+    expect(res.headers['content-type']).toMatch('text/plain');
     done();
   });
 
@@ -57,13 +70,13 @@ describe('Test run function', () => {
 
 describe('Test build function', () => {
   beforeAll((done) => {
-    if (existsSync('./test-data/output')) {
-      execSync('rm -rf ./test-data/output');
+    if (existsSync('./output')) {
+      execSync('rm -rf ./output');
     }
-    build('./test-data/sample-web', './test-data/output');
+    build('./examples/simple-web', './output');
     done();
   });
-  const outputDir = './test-data/output/sample-web';
+  const outputDir = './output/src';
   const staticDir = `${outputDir}/static`;
   const assetDir = `${outputDir}/assets`;
   it('output folder must be created', async () => {
@@ -87,7 +100,7 @@ describe('Test build function', () => {
   });
 
   afterAll((done) => {
-    execSync('rm -rf ./test-data/output');
+    execSync('rm -rf ./output');
     done();
   });
 });

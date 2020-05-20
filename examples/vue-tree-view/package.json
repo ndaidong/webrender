@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0",
+  "name": "vue-tree-view",
+  "engines": {
+    "node": ">= 10.14.2"
+  },
+  "scripts": {
+    "dev": "DEBUG=webrender:* PORT=8864 webren run ./",
+    "build": "DEBUG=webrender:* webren build ./ ./dist"
+  },
+  "dependencies": {
+    "webrender": "../.."
+  },
+  "license": "MIT"
+}
