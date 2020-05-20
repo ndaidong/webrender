@@ -76,7 +76,7 @@ describe('Test build function', () => {
     build('./examples/simple-web', './output');
     done();
   });
-  const outputDir = './output/src';
+  const outputDir = './output/simple-web';
   const staticDir = `${outputDir}/static`;
   const assetDir = `${outputDir}/assets`;
   it('output folder must be created', async () => {
@@ -100,7 +100,7 @@ describe('Test build function', () => {
   });
 
   afterAll((done) => {
-    execSync('rm -rf ./output');
+    // execSync('rm -rf ./output');
     done();
   });
 });
