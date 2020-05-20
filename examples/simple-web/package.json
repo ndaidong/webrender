@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "name": "simple-web",
+  "engines": {
+    "node": ">= 10.14.2"
+  },
+  "scripts": {
+    "dev": "DEBUG=webrender:* PORT=8864 webren run ./",
+    "build": "DEBUG=webrender:* webren build ./ ./dist"
+  },
+  "dependencies": {
+    "bellajs": "^8.0.2",
+    "lit-html": "^1.2.1",
+    "webrender": "../.."
+  },
+  "license": "MIT"
+}

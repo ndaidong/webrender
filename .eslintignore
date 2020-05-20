@@ -12,4 +12,5 @@ README.md
 vendor
 
 .nuxt
-test-data
+examples
+output
