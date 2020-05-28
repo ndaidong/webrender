@@ -4,6 +4,7 @@ const {existsSync, lstatSync, readFileSync} = require('fs');
 
 const {genid} = require('bellajs');
 const express = require('express');
+const cors = require('cors');
 
 const parseJS = require('./parseJS');
 const parseCSS = require('./parseCSS');
@@ -29,6 +30,7 @@ const run = (src) => {
   const revision = genid(24);
 
   const app = express();
+  app.use(cors());
 
   app.get('*', async (req, res, next) => {
     const endpoint = req.path;
