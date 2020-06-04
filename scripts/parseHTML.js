@@ -43,7 +43,7 @@ const parseHTML = (content, rev) => {
   info(' > Parsing HTML: put CSS back');
   cssLinks.forEach((href) => {
     const fpath = href + '?v=' + rev;
-    const subTag = `<link rel="subresource" href="${fpath}">`;
+    const subTag = `<link rel="preload" href="${fpath}" as="style">`;
     $('head').append(subTag);
     const styleTag = `<link rel="stylesheet" type="text/css" href="${fpath}">`;
     $('head').append(styleTag);
@@ -52,6 +52,8 @@ const parseHTML = (content, rev) => {
   info(' > Parsing HTML: put JS back');
   jsLinks.forEach((href) => {
     const fpath = href + '?v=' + rev;
+    const subTag = `<link rel="preload" href="${fpath}" as="script">`;
+    $('head').append(subTag);
     const scriptTag = `<script type="text/javascript" src="${fpath}"></script>`;
     $('body').append(scriptTag);
   });
