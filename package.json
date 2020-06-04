@@ -1,5 +1,5 @@
 {
-  "version": "2.0.2",
+  "version": "2.0.3",
   "name": "webrender",
   "homepage": "https://www.npmjs.com/package/webrender",
   "description": "Run live web and build static site using pure HTML/JS/CSS, with PostCSS, Rollup",
@@ -34,14 +34,14 @@
     "express": "^4.17.1",
     "html-minifier": "^4.0.0",
     "minimist": "^1.2.5",
-    "postcss": "^7.0.31",
+    "postcss": "^7.0.32",
     "postcss-custom-media": "^7.0.8",
     "postcss-custom-properties": "^9.1.1",
     "postcss-import": "^12.0.1",
     "postcss-nested": "^4.2.1",
     "postcss-short": "^5.0.0",
     "pretty": "^2.0.0",
-    "rollup": "^2.11.2",
+    "rollup": "^2.13.1",
     "rollup-plugin-cleanup": "^3.1.1",
     "strip-css-comments": "^4.1.0",
     "terser": "^4.7.0"
