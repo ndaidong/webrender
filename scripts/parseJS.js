@@ -5,7 +5,7 @@ const {normalize} = require('path');
 const {rollup} = require('rollup');
 const strip = require('@rollup/plugin-strip');
 
-const nodeResolve = require('@rollup/plugin-node-resolve');
+const {nodeResolve} = require('@rollup/plugin-node-resolve');
 const commonjs = require('@rollup/plugin-commonjs');
 const cleanup = require('rollup-plugin-cleanup');
 const terser = require('terser');
