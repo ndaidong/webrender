@@ -9,7 +9,7 @@
     "build": "DEBUG=webrender:* webren build ./ ./dist"
   },
   "dependencies": {
-    "webrender": "../.."
+    "webrender": "file:.yalc/webrender"
   },
   "license": "MIT"
 }

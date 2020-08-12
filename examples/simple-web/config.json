@@ -1,0 +1,10 @@
+{
+  "meta": {
+    "name": "simple-web",
+    "title": "Simple Website",
+    "description": "Simple example website build with webrender",
+    "url": "",
+    "image": "",
+    "author": "@ndaidong"
+  }
+}

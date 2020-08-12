@@ -26,7 +26,7 @@ const rollupify = async (input, mode) => {
         maxEmptyLines: 0,
       }),
     ];
-    if (mode !== 'dev') {
+    if (mode === 'production') {
       plugins.push(strip({
         debugger: false,
         functions: [
@@ -62,7 +62,7 @@ const rollupify = async (input, mode) => {
 
     const jsCode = codeParts.join('\n');
 
-    if (mode === 'dev') {
+    if (mode !== 'production') {
       return jsCode;
     }
 

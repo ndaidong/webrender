@@ -4,18 +4,18 @@ const {existsSync} = require('fs');
 const {execSync} = require('child_process');
 
 const request = require('supertest');
+
 const run = require('./scripts/run');
 const build = require('./scripts/build');
 const {
   isFile,
   isDirectory,
   isHtmlFile,
-  createFilePath,
+  makeFilePath,
 } = require('./scripts/utils');
 
-
 describe('Test run function', () => {
-  const app = run('./examples/simple-web');
+  const app = run('../examples/simple-web');
   it('website must be running', async (done) => {
     const res = await request(app).get('/');
     expect(res.statusCode).toEqual(200);
@@ -69,30 +69,37 @@ describe('Test run function', () => {
 });
 
 describe('Test build function', () => {
+  const srcDir = '../examples/simple-web';
+  const outputDir = './output';
   beforeAll((done) => {
-    if (existsSync('./output')) {
-      execSync('rm -rf ./output');
+    if (existsSync(outputDir)) {
+      execSync(`rm -rf ${outputDir}`);
     }
-    build('./examples/simple-web', './output');
+    build(srcDir, outputDir);
     done();
   });
-  const outputDir = './output/simple-web';
-  const staticDir = `${outputDir}/static`;
+
   const assetDir = `${outputDir}/assets`;
   it('output folder must be created', async () => {
     expect(existsSync(outputDir)).toBe(true);
     expect(isDirectory(outputDir)).toBe(true);
   });
   it('index.html must be generated', async () => {
-    const indexFile = createFilePath(outputDir, 'index.html');
+    const indexFile = makeFilePath(outputDir, 'index.html');
     expect(existsSync(indexFile)).toBe(true);
     expect(isFile(indexFile)).toBe(true);
     expect(isHtmlFile(indexFile)).toBe(true);
   });
+  it('error.html must be generated', async () => {
+    const errorFile = makeFilePath(outputDir, 'index.html');
+    expect(existsSync(errorFile)).toBe(true);
+    expect(isFile(errorFile)).toBe(true);
+    expect(isHtmlFile(errorFile)).toBe(true);
+  });
   it('static folder must be copied', async () => {
-    expect(existsSync(staticDir)).toBe(true);
-    expect(isDirectory(staticDir)).toBe(true);
-    expect(existsSync(`${staticDir}/robots.txt`)).toBe(true);
+    expect(existsSync(`${outputDir}/favicon.ico`)).toBe(true);
+    expect(existsSync(`${outputDir}/robots.txt`)).toBe(true);
+    expect(existsSync(`${outputDir}/images`)).toBe(true);
   });
   it('output assets folders must be created', async () => {
     expect(existsSync(assetDir)).toBe(true);

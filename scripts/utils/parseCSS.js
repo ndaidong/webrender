@@ -7,9 +7,10 @@ const CleanCSS = require('clean-css');
 const stripCssComments = require('strip-css-comments');
 
 const {error, info} = require('./logger');
+
 const {
   readFile,
-} = require('./utils');
+} = require('./index');
 
 const POSTCSS_PLUGINS = [
   require('postcss-import'),
@@ -34,12 +35,12 @@ const postify = async (fileSrc, mode) => {
     const result = await postcss(plugins).process(css, {
       from: fileSrc,
       map: {
-        inline: mode == 'dev',
+        inline: mode !== 'production',
       },
     });
 
     const minOpt = {level: 2};
-    if (mode == 'dev') {
+    if (mode !== 'production') {
       minOpt.level = 0;
       minOpt.format = 'beautify';
     }
@@ -50,7 +51,7 @@ const postify = async (fileSrc, mode) => {
     info(' > Postifying: minifying CSS code');
     const minOutput = await cleaner.minify(result.css);
 
-    if (mode == 'dev') {
+    if (mode !== 'production') {
       return minOutput.styles;
     }
     return removeComments(minOutput.styles);
