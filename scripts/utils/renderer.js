@@ -43,10 +43,12 @@ const renderJS = async (jsFile, config = {}) => {
 
 const renderHTML = async (tplFile, config = {}) => {
   try {
-    const {NOTPL, TPLDIR} = config;
+    const {TPLDIR} = config;
     const tplContent = readFile(tplFile);
-    nunjucks.configure(TPLDIR);
-    const content = NOTPL ? tplContent : nunjucks.renderString(tplContent, config);
+    if (TPLDIR) {
+      nunjucks.configure(TPLDIR);
+    }
+    const content = !TPLDIR ? tplContent : nunjucks.renderString(tplContent, config);
     const html = await parseHTML(content, config);
     return html;
   } catch (err) {

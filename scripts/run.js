@@ -28,7 +28,6 @@ const ENV = env.ENV || 'dev';
 const HOST = env.HOST || '0.0.0.0';
 const PORT = Number(env.PORT) || 8182;
 const TPLDIR = env.TPLDIR || './templates';
-const NOTPL = TPLDIR === 'false';
 
 const run = (src, middlewares = []) => {
   const sourceDir = fixPath(src, __dirname);
@@ -39,8 +38,7 @@ const run = (src, middlewares = []) => {
   config.ENV = ENV;
   config.HOST = HOST;
   config.PORT = PORT;
-  config.NOTPL = NOTPL;
-  config.TPLDIR = tplDir;
+  config.TPLDIR = existsSync(tplDir) ? tplDir : false;
   config.SRCDIR = sourceDir;
   config.revision = genid(32);
 
@@ -87,7 +85,7 @@ const run = (src, middlewares = []) => {
 
   app.get('*', async (req, res, next) => {
     const endpoint = req.path !== '/' ? req.path : 'index.html';
-    const fpath = makeFilePath(NOTPL ? './' : tplDir, endpoint);
+    const fpath = makeFilePath(!config.TPLDIR ? './' : tplDir, endpoint);
     if (!existsSync(fpath) || !lstatSync(fpath).isFile()) {
       return next();
     }
@@ -103,7 +101,7 @@ const run = (src, middlewares = []) => {
   app.use(async (req, res) => {
     error(`${req.method} ${req.path} --> 404`);
     const errMsg = `The endpoint \`${req.path}\` does not exist!`;
-    if (NOTPL) {
+    if (!config.TPLDIR) {
       res.type('text/html');
       return res.status(404).send(errMsg);
     } else {
@@ -123,7 +121,7 @@ const run = (src, middlewares = []) => {
   app.use(async (err, req, res) => {
     error(`${req.METHOD} ${req.path} --> ${String(err)}`);
     const errMsg = 'Internal Server Error';
-    if (NOTPL) {
+    if (config.TPLDIR) {
       res.type('text/html');
       return res.status(500).send(errMsg);
     } else {

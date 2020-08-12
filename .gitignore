@@ -24,3 +24,6 @@ pnpm-lock.yaml
 
 output
 examples/*/dist
+
+.yalc/
+yalc.lock

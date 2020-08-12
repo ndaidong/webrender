@@ -23,14 +23,19 @@ my-project
      - static
         - fonts
         - images
-     - favicon.ico
-     - index.html
-     - about.html
-     - faq.html
-
+        - favicon.ico
+     - templates
+       - index.html
+       - about.html
+       - faq.html
+     - config.json
 ```
 
 Here the website source code is placed within `src` folder. However the folder name can be anything else.
+`templates` dir is not required. If it does exist, `webrender` will try to parse them with [nunjucks](https://mozilla.github.io/nunjucks/) template engine. Otherwise, the HTML files located at root folder will be used.
+
+View `examples/` for reference.
+
 
 In order to use `webrender`, let's install it:
 
@@ -38,7 +43,7 @@ In order to use `webrender`, let's install it:
 npm i webrender
 ```
 
-And you can use command line or call it from code.
+Then you can use it with command line or call it from code.
 
 
 ### Command Line

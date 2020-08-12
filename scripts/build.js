@@ -115,7 +115,6 @@ const buildHtmlPage = async (tplFile, config, targetDir) => {
 const build = (src, dist = './dist') => {
   const env = process.env || {};
   const TPLDIR = env.TPLDIR || './templates';
-  const NOTPL = TPLDIR === 'false';
 
   const sourceDir = fixPath(src, __dirname);
   const confFile = makeFilePath(sourceDir, 'config.json');
@@ -123,8 +122,7 @@ const build = (src, dist = './dist') => {
   const tplDir = makeFilePath(sourceDir, TPLDIR);
 
   config.ENV = env.ENV || 'dev';
-  config.NOTPL = NOTPL;
-  config.TPLDIR = tplDir;
+  config.TPLDIR = existsSync(tplDir) ? tplDir : false;
   config.SRCDIR = sourceDir;
   config.revision = genid(32);
 
