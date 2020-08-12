@@ -20,6 +20,7 @@ const {
   existsSync,
   makeFilePath,
   fixPath,
+  isAbsoluteURL,
 } = require('./utils');
 
 const env = process.env || {};
@@ -27,6 +28,7 @@ const env = process.env || {};
 const ENV = env.ENV || 'dev';
 const HOST = env.HOST || '0.0.0.0';
 const PORT = Number(env.PORT) || 8182;
+const URL = env.URL || '';
 const TPLDIR = env.TPLDIR || './templates';
 
 const run = (src, middlewares = []) => {
@@ -35,9 +37,19 @@ const run = (src, middlewares = []) => {
   const config = existsSync(confFile) ? require(confFile) : {};
   const tplDir = path.join(sourceDir, TPLDIR);
 
+  const {meta} = config;
+  const {url: metaUrl, image} = meta;
+  const siteUrl = URL ? URL : metaUrl ? metaUrl : `http://${HOST}:${PORT}`;
+  if (metaUrl !== siteUrl) {
+    config.meta.url = siteUrl;
+  }
+  if (image && !isAbsoluteURL(image)) {
+    config.meta.image = makeFilePath(siteUrl, image);
+  }
   config.ENV = ENV;
   config.HOST = HOST;
   config.PORT = PORT;
+  config.URL = siteUrl;
   config.TPLDIR = existsSync(tplDir) ? tplDir : false;
   config.SRCDIR = sourceDir;
   config.revision = genid(32);

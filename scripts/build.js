@@ -121,10 +121,22 @@ const build = (src, dist = './dist') => {
   const config = existsSync(confFile) ? require(confFile) : {};
   const tplDir = makeFilePath(sourceDir, TPLDIR);
 
+  const URL = env.URL || '';
+
   config.ENV = env.ENV || 'dev';
   config.TPLDIR = existsSync(tplDir) ? tplDir : false;
   config.SRCDIR = sourceDir;
   config.revision = genid(32);
+
+  const {meta} = config;
+  const {url: metaUrl, image} = meta;
+  const siteUrl = URL ? URL : metaUrl ? metaUrl : '';
+  if (metaUrl !== siteUrl) {
+    config.meta.url = siteUrl;
+  }
+  if (image && !isAbsoluteURL(image)) {
+    config.meta.image = makeFilePath(siteUrl, image);
+  }
 
   if (existsSync(dist)) {
     execSync(`rm -rf ${dist}`);
