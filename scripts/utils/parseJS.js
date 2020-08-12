@@ -67,7 +67,7 @@ const rollupify = async (input, mode) => {
     }
 
     info(' > Rollupifying: minifying JS code');
-    const minOutput = terser.minify(jsCode, {
+    const minOutput = await terser.minify(jsCode, {
       toplevel: true,
       output: {
         beautify: false,
