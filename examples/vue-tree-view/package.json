@@ -5,11 +5,11 @@
     "node": ">= 10.14.2"
   },
   "scripts": {
-    "dev": "DEBUG=webrender:* PORT=8864 webren run ./",
+    "dev": "DEBUG=webrender:* PORT=8864 TPLDIR=false webren run ./",
     "build": "DEBUG=webrender:* webren build ./ ./dist"
   },
   "dependencies": {
-    "webrender": "../.."
+    "webrender": "file:.yalc/webrender"
   },
   "license": "MIT"
 }

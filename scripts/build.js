@@ -3,37 +3,37 @@
 const {execSync} = require('child_process');
 const {readdirSync, existsSync} = require('fs');
 
-const {genid} = require('bellajs');
+const nunjucks = require('nunjucks');
 const {load} = require('cheerio');
+const {genid} = require('bellajs');
 
-const parseJS = require('./parseJS');
-const parseCSS = require('./parseCSS');
-const minifyHTML = require('./minifyHTML');
-const {info, error} = require('./logger');
+const parseJS = require('./utils/parseJS');
+const parseCSS = require('./utils/parseCSS');
+const minifyHTML = require('./utils/minifyHTML');
+const {info} = require('./utils/logger');
 
 const {
   isFile,
-  isDirectory,
   isHtmlFile,
   isAbsoluteURL,
-  createFilePath,
-  getAssetPath,
   getBaseDir,
   getFileName,
+  getAssetPath,
+  makeFilePath,
   readFile,
   writeFile,
+  fixPath,
 } = require('./utils');
 
-
-const REVISION = genid(24);
-
-const buildHtmlPage = (tplFile, sourceDir, targetDir) => {
+const buildHtmlPage = async (tplFile, config, targetDir) => {
   info(`Building page "${tplFile}...`);
-  const tplFilePath = createFilePath(sourceDir, tplFile);
-
   info(' > Parsing HTML: load content');
-  const htmlContent = readFile(tplFilePath);
-  const $ = load(htmlContent, {
+  const {NOTPL, SRCDIR, TPLDIR, revision} = config;
+  const tplContent = readFile(tplFile);
+  nunjucks.configure(TPLDIR);
+  const content = NOTPL ? tplContent : nunjucks.renderString(tplContent, config);
+
+  const $ = load(content, {
     normalizeWhitespace: true,
   });
 
@@ -47,11 +47,11 @@ const buildHtmlPage = (tplFile, sourceDir, targetDir) => {
     const relFilePath = $el.attr('href') || '';
     if (relFilePath && !isAbsoluteURL(relFilePath)) {
       $el.remove();
-      const srcFilePath = getAssetPath(relFilePath, sourceDir);
+      const srcFilePath = makeFilePath(SRCDIR, relFilePath);
       if (existsSync(srcFilePath)) {
         cssFiles.push(relFilePath);
-        const fpath = relFilePath + '?rev=' + REVISION;
-        const subTag = `<link rel="subresource" href="${fpath}">`;
+        const fpath = relFilePath + '?rev=' + revision;
+        const subTag = `<link rel="preload" href="${fpath}" as="style">`;
         $('head').append(subTag);
         const styleTag = `<link rel="stylesheet" type="text/css" href="${fpath}">`;
         $('head').append(styleTag);
@@ -60,7 +60,7 @@ const buildHtmlPage = (tplFile, sourceDir, targetDir) => {
   });
 
   cssFiles.forEach(async (cssFile) => {
-    const srcFilePath = getAssetPath(cssFile, sourceDir);
+    const srcFilePath = makeFilePath(SRCDIR, cssFile);
     const cssContent = await parseCSS(srcFilePath, 'production');
     const baseDir = getBaseDir(cssFile);
     const destDir = getAssetPath(baseDir, targetDir);
@@ -77,10 +77,12 @@ const buildHtmlPage = (tplFile, sourceDir, targetDir) => {
     const relFilePath = $el.attr('src') || '';
     if (relFilePath && !isAbsoluteURL(relFilePath)) {
       $el.remove();
-      const srcFilePath = getAssetPath(relFilePath, sourceDir);
+      const srcFilePath = makeFilePath(SRCDIR, relFilePath);
       if (existsSync(srcFilePath)) {
         jsFiles.push(relFilePath);
-        const fpath = relFilePath + '?rev=' + REVISION;
+        const fpath = relFilePath + '?rev=' + revision;
+        const subTag = `<link rel="preload" href="${fpath}" as="script">`;
+        $('head').append(subTag);
         const scriptTag = `<script type="text/javascript" src="${fpath}"></script>`;
         $('body').append(scriptTag);
       }
@@ -88,77 +90,64 @@ const buildHtmlPage = (tplFile, sourceDir, targetDir) => {
   });
 
   jsFiles.forEach(async (jsFile) => {
-    const srcFilePath = getAssetPath(jsFile, sourceDir);
+    const srcFilePath = makeFilePath(SRCDIR, jsFile);
     const jsContent = await parseJS(srcFilePath, 'production');
+    const entries = [jsContent];
     const baseDir = getBaseDir(jsFile);
     const destDir = getAssetPath(baseDir, targetDir);
     execSync(`mkdir -p ${destDir}`);
     const fileName = getFileName(jsFile);
     const distFilePath = getAssetPath(fileName, destDir);
-    writeFile(distFilePath, jsContent);
+    writeFile(distFilePath, entries.join('\n\n' + '/'.repeat(80) + '\n'));
   });
 
   info(' > Parsing HTML: cleanify & minify HTML code');
-  const htmlFilePath = createFilePath(targetDir, tplFile);
+  const fileName = getFileName(tplFile);
+  const htmlFilePath = makeFilePath(targetDir, fileName);
 
   const html = $.html();
   writeFile(htmlFilePath, minifyHTML(html));
   info(`Release a HTML page at '${htmlFilePath}'`);
+
+  return true;
 };
 
-
 const build = (src, dist = './dist') => {
-  if (!existsSync(src)) {
-    return error(`"${src}" does not exist!`);
-  }
-  if (!isDirectory(src)) {
-    return error(`"${src}" is not a directory!`);
-  }
-  if (!existsSync(dist)) {
-    execSync(`mkdir -p ${dist}`);
-    info(`Create "${dist}" folder `);
-  }
-  const webfolder = getFileName(src);
-  const targetDir = createFilePath(dist, webfolder);
-  if (existsSync(targetDir)) {
-    execSync(`rm -rf ${targetDir}`);
-    info(`Remove old "${targetDir}" folder `);
-  }
-  execSync(`mkdir -p ${targetDir}`);
-  info(`Create "${targetDir}" folder `);
+  const env = process.env || {};
+  const TPLDIR = env.TPLDIR || './templates';
+  const NOTPL = TPLDIR === 'false';
 
-  const faviconFile = createFilePath(src, 'favicon.ico');
-  if (existsSync(faviconFile)) {
-    execSync(`cp ${faviconFile} ${targetDir}`);
-    info(`Release "${faviconFile}"`);
+  const sourceDir = fixPath(src, __dirname);
+  const confFile = makeFilePath(sourceDir, 'config.json');
+  const config = existsSync(confFile) ? require(confFile) : {};
+  const tplDir = makeFilePath(sourceDir, TPLDIR);
+
+  config.ENV = env.ENV || 'dev';
+  config.NOTPL = NOTPL;
+  config.TPLDIR = tplDir;
+  config.SRCDIR = sourceDir;
+  config.revision = genid(32);
+
+  if (existsSync(dist)) {
+    execSync(`rm -rf ${dist}`);
+    info(`Remove old "${dist}" folder `);
   }
-  const faviconStaticFile = createFilePath(src, 'static', 'favicon.ico');
-  if (existsSync(faviconStaticFile)) {
-    execSync(`cp ${faviconStaticFile} ${targetDir}`);
-    info(`Release "${faviconStaticFile}"`);
-  }
-  const robotsFile = createFilePath(src, 'robots.txt');
-  if (existsSync(robotsFile)) {
-    execSync(`cp ${robotsFile} ${targetDir}`);
-    info(`Release "${robotsFile}"`);
-  }
-  const robotsStaticFile = createFilePath(src, 'static', 'robots.txt');
-  if (existsSync(robotsStaticFile)) {
-    execSync(`cp ${robotsStaticFile} ${targetDir}`);
-    info(`Release "${robotsStaticFile}"`);
-  }
-  const sourceStaticDir = createFilePath(src, 'static');
+  execSync(`mkdir -p ${dist}`);
+  info(`Create "${dist}" folder `);
+
+  const sourceStaticDir = makeFilePath(sourceDir, './static');
   if (existsSync(sourceStaticDir)) {
-    execSync(`cp -r ${sourceStaticDir} ${targetDir}`);
+    execSync(`cp -r ${sourceStaticDir}/* ${dist}`);
     info(`Release "${sourceStaticDir}"`);
   }
 
-  readdirSync(src).forEach((file) => {
-    const f = createFilePath(src, file);
+  const compile = (file) => {
+    const f = makeFilePath(tplDir, file);
     if (isFile(f) && isHtmlFile(f)) {
-      return buildHtmlPage(file, src, targetDir);
+      return buildHtmlPage(f, config, dist);
     }
-  });
+  };
+  readdirSync(tplDir).map(compile);
 };
 
 module.exports = build;

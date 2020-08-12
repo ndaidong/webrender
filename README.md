@@ -38,11 +38,16 @@ In order to use `webrender`, let's install it:
 npm i webrender
 ```
 
-Then add these 2 commands to `script` section of the `package.json` file, for example:
+And you can use command line or call it from code.
+
+
+### Command Line
+
+Add these 2 commands to `script` section of the `package.json` file, for example:
 
 ```json
   "scripts": {
-    "dev": "DEBUG=webrender:* webren run ./src",
+    "run": "DEBUG=webrender:* webren run ./src",
     "build": "DEBUG=webrender:* webren build ./src ./dist"
   },
 ```
@@ -58,6 +63,49 @@ Once everything is ok, we can build a static site into `dist` folder:
 ```bash
 npm run build
 ```
+
+### Programmatically
+
+Run a website located at `./src` folder:
+
+```js
+const run = require('webrender/scripts/run');
+run('./src');
+```
+
+This approach is helpful to work with `nodemon` for auto reloading.
+
+
+```json
+  "scripts": {
+    "dev": "DEBUG=webrender:* PORT=4728 nodemon server.js -e js,css,html,json,yaml"
+  },
+```
+
+
+You can even add more express middlewares:
+
+```js
+const path = require('path');
+
+const cors = require('cors');
+const favicon = require('serve-favicon');
+
+const middlewares = [
+  cors(),
+  favicon(path.join(__dirname, 'public', 'favicon.ico')),
+];
+
+run('./src', middlewares);
+```
+
+Lastly, just build static version of this website to `./dist` folder:
+
+```js
+const build = require('webrender/scripts/build');
+build('./src', './dist');
+```
+
 
 # Test
 

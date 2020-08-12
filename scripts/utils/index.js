@@ -1,10 +1,13 @@
 // utils
 
+const {execSync} = require('child_process');
 const {extname, normalize, join, parse} = require('path');
 const URL = require('url');
+
 const {
   statSync,
   existsSync,
+  readdirSync,
   readFileSync,
   writeFileSync,
 } = require('fs');
@@ -28,13 +31,13 @@ const isAbsoluteURL = (file = '') => {
   return f.startsWith('http') || f.startsWith('//');
 };
 
-const createFilePath = (...args) => {
+const makeFilePath = (...args) => {
   return normalize(join(...args));
 };
 
 const getAssetPath = (relPath, sourceDir) => {
   const pathname = URL.parse(relPath).pathname || '';
-  return pathname ? createFilePath(sourceDir, pathname) : sourceDir;
+  return pathname ? makeFilePath(sourceDir, pathname) : sourceDir;
 };
 
 const getBaseDir = (relPath) => {
@@ -53,12 +56,25 @@ const writeFile = (f, content) => {
   return writeFileSync(f, content, 'utf8');
 };
 
+
+const fixPath = (src, curdir) => {
+  return normalize(join(curdir, src)
+    .replace('node_modules/webrender/scripts', '')
+    .replace('.yalc/webrender/scripts', ''));
+};
+
+
 module.exports = {
+  execSync,
+  existsSync,
+  readdirSync,
+  normalize,
   isFile,
   isDirectory,
   isHtmlFile,
   isAbsoluteURL,
-  createFilePath,
+  fixPath,
+  makeFilePath,
   getAssetPath,
   getBaseDir,
   getFileName,
