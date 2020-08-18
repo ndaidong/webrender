@@ -33,7 +33,7 @@ const renderJS = async (jsFile, config = {}) => {
     info('Load JS from cache');
     return cache.get(jsFile);
   }
-  const js = await parseJS(jsFile, ENV);
+  const js = await parseJS(jsFile, config);
   if (ENV === 'production') {
     info('Save JS to cache');
     cache.set(jsFile, js);
