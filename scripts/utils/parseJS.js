@@ -7,26 +7,29 @@ const strip = require('@rollup/plugin-strip');
 
 const {nodeResolve} = require('@rollup/plugin-node-resolve');
 const commonjs = require('@rollup/plugin-commonjs');
+const replace = require('@rollup/plugin-replace');
 const cleanup = require('rollup-plugin-cleanup');
 const terser = require('terser');
 
 const {error, info} = require('./logger');
 
-const rollupify = async (input, mode) => {
+const rollupify = async (input, config) => {
   try {
     info(' > Rollupifying: load plugins');
+    const {ENV, replacement} = config;
     const plugins = [
       nodeResolve(),
       commonjs({
         include: 'node_modules/**',
         sourceMap: false,
       }),
+      replace(replacement),
       cleanup({
         comments: 'none',
         maxEmptyLines: 0,
       }),
     ];
-    if (mode === 'production') {
+    if (ENV === 'production') {
       plugins.push(strip({
         debugger: false,
         functions: [
@@ -62,7 +65,7 @@ const rollupify = async (input, mode) => {
 
     const jsCode = codeParts.join('\n');
 
-    if (mode !== 'production') {
+    if (ENV !== 'production') {
       return jsCode;
     }
 
@@ -81,10 +84,11 @@ const rollupify = async (input, mode) => {
   return '';
 };
 
-module.exports = async (filePath, mode = 'dev') => {
+module.exports = async (filePath, config) => {
   const fullPath = normalize(filePath);
   info('Start rollupifying JS content with Rollup...');
-  const jsContent = await rollupify(fullPath, mode);
-  info(`Rollupified JS file '${fullPath}' in ${mode} mode`);
+  const jsContent = await rollupify(fullPath, config);
+  const {ENV} = config;
+  info(`Rollupified JS file '${fullPath}' in ${ENV} mode`);
   return jsContent;
 };

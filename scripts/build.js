@@ -91,7 +91,7 @@ const buildHtmlPage = async (tplFile, config, targetDir) => {
 
   jsFiles.forEach(async (jsFile) => {
     const srcFilePath = makeFilePath(SRCDIR, jsFile);
-    const jsContent = await parseJS(srcFilePath, 'production');
+    const jsContent = await parseJS(srcFilePath, config);
     const entries = [jsContent];
     const baseDir = getBaseDir(jsFile);
     const destDir = getAssetPath(baseDir, targetDir);
